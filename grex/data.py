@@ -68,7 +68,11 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
                 features[("meta", k)] = v
 
     for node_name, node_id in match["matching"]["nodes"].items():
-        # Node features
+
+        if node_id == "0": # fake root
+            continue
+        
+        # node features
         features.update(build_node_features(
             node_name,
             "own",
