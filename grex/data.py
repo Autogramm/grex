@@ -184,9 +184,9 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
         req = grewpy.Request(scope)
         if conclusion is not None:
             matches = corpus.search(req, clustering_parameter=["{" + conclusion + "}"])
-            matches = [(sent, c) for c, sents in matches.items() for sent in sents]
+            matches = [(sent, c, sent["sent_id"]) for c, sents in matches.items() for sent in sents]
         else:
-            matches = [(sent, "Yes") for sent in corpus.search(req)]
+            matches = [(sent, "Yes", sent["sent_id"]) for sent in corpus.search(req)]
 
         if conclusion_meta is not None:
             conclusion_meta = {
@@ -209,11 +209,12 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
                 if all(k in draft[sent['sent_id']].meta for k in conclusion_meta.keys())
             ]
 
-        for match, c in matches:
+        for match, c, sent_id in matches:
             assert c in ["Yes", "No"]
 
             data.append({
                 "input": extract_features(draft, match, feature_predicate),
+                "sent_id": sent_id,
                 "output": 1 if c == "Yes" else 0
             })
 
@@ -262,6 +263,7 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
 
         sanitized_data.append({
             "input": sanitized_input,
+            "sent_id": match["sent_id"],
             "output": match["output"]
         })
 
