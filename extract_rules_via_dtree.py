@@ -65,7 +65,8 @@ if __name__ == "__main__":
     feature_predicate = FeaturePredicate.from_config(config["features"], templates=templates)
 
     print("Loading dataset...", flush=True)
-    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, config=args.config)
+    include_metadata = any('meta' in k for k in config.get('features', {}).get('sentence', {}))
+    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, include_metadata)
 
     # quick checks
     if len(data) == 0:
@@ -104,6 +105,8 @@ if __name__ == "__main__":
         y[i] = v
 
     extracted_rules = dict()
+    extracted_rules['scope'] = scope
+    extracted_rules['conclusion'] = conclusion if not conclusion_meta else f"{conclusion},{",".join(f"{k}={v}" for k, v in conclusion_meta.items())}"
     extracted_rules["data_len"] = len(data)
     extracted_rules["n_yes"] = num_positive
 
@@ -146,20 +149,29 @@ if __name__ == "__main__":
         expected = (n_matched * num_positive) / len(data)
         delta_observed_expected = n_pattern_positive_occurence - expected
 
+        coverage_p = n_pattern_positive_occurence / n_matched
+        coverage_not_p = n_pattern_negative_occurence / n_matched
+
         if decision:
             coverage = (n_pattern_positive_occurence / num_positive) * 100
-            presicion = (n_pattern_positive_occurence / n_matched) * 100
+            precision = (n_pattern_positive_occurence / n_matched) * 100
+            ratio = coverage_p / coverage_not_p if coverage_p != 0 else 0
         else:
             coverage = (n_pattern_negative_occurence / (len(data) - num_positive)) * 100
-            presicion = (n_pattern_negative_occurence / n_matched) * 100
+            precision = (n_pattern_negative_occurence / n_matched) * 100
+            ratio = coverage_not_p / coverage_p if coverage_p != 0  else 0
 
         rules.append({
             "pattern": str(rule),
-            "n_pattern_occurence": n_matched,
-            "n_pattern_positive_occurence": n_pattern_positive_occurence,
+            "n_pattern_occurences": n_matched,
+            "n_pattern_positive_occurences": int(n_pattern_positive_occurence),
+            "n_pattern_negative_occurrences": int(n_pattern_negative_occurence),
             "decision": "yes" if decision else "no",
             "coverage": coverage,
-            "precision": presicion,
+            "coverage_q_in_p": coverage_p,
+            "coverage_not_q_in_p": coverage_not_p,
+            "precision": precision,
+            "ratio_coverage_in_p": ratio,
             "delta": delta_observed_expected,
             "g-statistic": gstat,
             "p-value": p_value,
