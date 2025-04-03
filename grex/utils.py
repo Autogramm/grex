@@ -3,7 +3,7 @@ import collections
 
 from grewpy import Request
 
-ALLOWED_FEATURE_POSITIONS = ["own", "parent", "child", "prev", "next"]
+ALLOWED_FEATURE_POSITIONS = ["own", "parent", "child", "prev", "next", "meta"]
 
 class Dict:
     def __init__(self, values):

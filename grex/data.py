@@ -64,7 +64,7 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
     # sentence level meta features
     if include_metadata:
         for k, v in sentence.meta.items():
-            if k != "sent_id" and not k.startswith("text"):
+            if feature_predicate('sentence','meta', k):
                 features[("meta", k)] = v
 
     for node_name, node_id in match["matching"]["nodes"].items():
@@ -167,7 +167,7 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
     return features
 
 
-def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_predicate, config="ud"):
+def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_predicate, config="ud", include_metadata=False):
     grewpy.set_config(config)
 
     if conclusion is None and conclusion_meta is None:
@@ -213,7 +213,7 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
             assert c in ["Yes", "No"]
 
             data.append({
-                "input": extract_features(draft, match, feature_predicate),
+                "input": extract_features(draft, match, feature_predicate, include_metadata),
                 "sent_id": sent_id,
                 "output": 1 if c == "Yes" else 0
             })
