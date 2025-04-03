@@ -27,4 +27,10 @@ features:
             method: exclude
             regexp: ["form", "textform", "wordform", "lemma", "SpaceAfter", "Typo", "Correct.*"]
             lemma_top_k: 0
+#    sentence:
+#        meta:
+#            method: include
+#            regexp: ['speaker']
+#            lemma_top_k: 0
+
 
