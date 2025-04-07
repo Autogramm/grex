@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     print("Loading dataset...", flush=True)
     include_metadata = any('meta' in k for k in config.get('features', {}).get('sentence', {}))
-    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, include_metadata)
+    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, args.config, include_metadata)
 
     # quick checks
     if len(data) == 0:
