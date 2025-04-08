@@ -106,12 +106,21 @@ if __name__ == "__main__":
 
     extracted_rules = dict()
     extracted_rules['scope'] = scope
-    extracted_rules['conclusion'] = conclusion if not conclusion_meta else f"{conclusion},{",".join(f"{k}={v}" for k, v in conclusion_meta.items())}"
+    if conclusion_meta:
+        meta = ",".join(f"{k}={v}" for k, v in conclusion_meta.items())
+        extracted_rules['conclusion'] = f"{conclusion},{meta}" if conclusion else meta
+    else:
+        extracted_rules['conclusion'] = conclusion or ""
     extracted_rules["data_len"] = len(data)
     extracted_rules["n_yes"] = num_positive
 
-    # extract rules
+    classification_data = {
+    "X": X,
+    "y": y,
+    "patterns": list()
+    }
 
+    # extract rules
     rules = []
     clf = tree.DecisionTreeClassifier(criterion="entropy", 
                                     min_samples_leaf=args.min_samples_leaf, 
@@ -137,6 +146,9 @@ if __name__ == "__main__":
         n_pattern_positive_occurence = n_matched*T.value[n][0,1]
         n_pattern_negative_occurence = n_matched*T.value[n][0,0]
 
+        node_path = clf.decision_path(X)
+        matched_samples = node_path[:, n].toarray().flatten()
+
         mu = (num_positive / len(data))
         a = (n_pattern_positive_occurence / n_matched)
         gstat = 2 * n_matched * (
@@ -155,12 +167,12 @@ if __name__ == "__main__":
         if decision:
             coverage = (n_pattern_positive_occurence / num_positive) * 100
             precision = (n_pattern_positive_occurence / n_matched) * 100
-            ratio = coverage_p / coverage_not_p if coverage_p != 0 else 0
+            ratio = (coverage_p / coverage_not_p) if (coverage_p != 0 and coverage_not_p != 0) else 0
         else:
             coverage = (n_pattern_negative_occurence / (len(data) - num_positive)) * 100
             precision = (n_pattern_negative_occurence / n_matched) * 100
-            ratio = coverage_not_p / coverage_p if coverage_p != 0  else 0
-
+            ratio = (coverage_not_p / coverage_p) if (coverage_p != 0 and coverage_not_p != 0) else 0
+            
         rules.append({
             "pattern": str(rule),
             "n_pattern_occurences": n_matched,
@@ -177,9 +189,17 @@ if __name__ == "__main__":
             "p-value": p_value,
             "cramers_phi": cramers_phi
         })
-        
+
+    classification_data['patterns'].append({'name': str(rule), 'vector': matched_samples, 'decision': decision})
     extracted_rules['rules'] = rules
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
     json.dump(extracted_rules, out_stream)
+
+np.savez(
+        args.output.split(".")[0] + "_data", 
+        X=classification_data['X'],
+        y=classification_data['y'], 
+        patterns=classification_data['patterns']
+        )
