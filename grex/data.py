@@ -195,7 +195,7 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
             }
 
             matches = [
-                (sent, "No")
+                (sent, "No", sent["sent_id"])
                 if c == "No"
                 else (
                     (sent, "Yes")
