@@ -91,6 +91,12 @@ if __name__ == "__main__":
     extracted_rules["n_yes"] = num_positive
     extracted_rules["intercepts"] = list()
 
+    classification_data = {
+    "X": X,
+    "y": y,
+    "patterns": list()
+    }
+
     # extract rules
     all_rules = set()
     ordered_rules = list()
@@ -166,11 +172,19 @@ if __name__ == "__main__":
                     "cramers_phi": cramers_phi
                 })
 
-    extracted_rules["rules"] = ordered_rules
+                classification_data['patterns'].append({'name': name, 'vector': with_feature_selector, 'decision': decision})
 
+    extracted_rules["rules"] = ordered_rules
     # if len(extracted_data) == 3:
     #    break
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
     json.dump(extracted_rules, out_stream)
+
+np.savez(
+        args.output.split(".")[0] + "_data", 
+        X=classification_data['X'],
+        y=classification_data['y'], 
+        patterns=classification_data['patterns']
+        )
