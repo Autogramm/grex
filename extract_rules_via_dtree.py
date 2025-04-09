@@ -114,6 +114,7 @@ if __name__ == "__main__":
     extracted_rules["data_len"] = len(data)
     extracted_rules["n_yes"] = num_positive
 
+    # TODO
     classification_data = {
     "X": X,
     "y": y,
@@ -190,16 +191,17 @@ if __name__ == "__main__":
             "cramers_phi": cramers_phi
         })
 
-    classification_data['patterns'].append({'name': str(rule), 'vector': matched_samples, 'decision': decision})
+    # TODO: idx of each feature and decision for each feature...
+    #classification_data['patterns'].append({'name': str(rule), 'vector': TODO, 'decision': decision})
     extracted_rules['rules'] = rules
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
     json.dump(extracted_rules, out_stream)
 
-np.savez(
-        args.output.split(".")[0] + "_data", 
-        X=classification_data['X'],
-        y=classification_data['y'], 
-        patterns=classification_data['patterns']
-        )
+# np.savez(
+#         args.output.split(".")[0] + "_data", 
+#         X=classification_data['X'],
+#         y=classification_data['y'], 
+#         patterns=classification_data['patterns']
+#         )
