@@ -172,7 +172,7 @@ if __name__ == "__main__":
                     "cramers_phi": cramers_phi
                 })
 
-                classification_data['patterns'].append({'name': name, 'vector': with_feature_selector, 'decision': decision})
+                classification_data['patterns'].append({'name': name, 'idx': idx, 'decision': decision})
 
     extracted_rules["rules"] = ordered_rules
     # if len(extracted_data) == 3:
@@ -185,6 +185,6 @@ with open(args.output, 'w') as out_stream:
 np.savez(
         args.output.split(".")[0] + "_data", 
         X=classification_data['X'],
-        y=classification_data['y'], 
+        y=classification_data['y'],
         patterns=classification_data['patterns']
         )
