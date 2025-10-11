@@ -35,8 +35,7 @@ if __name__ == "__main__":
     feature_predicate = FeaturePredicate.from_config(config["features"], templates=templates)
 
     print("Loading dataset...", flush=True)
-    include_metadata = any('meta' in k for k in config.get('features', {}).get('sentence', {}))
-    data = extract_data(args.data, scope, conclusion, feature_predicate, args.config, include_metadata)
+    data = extract_data(args.data, scope, conclusion, feature_predicate, args.config)
 
     # quick checks
     if len(data) == 0:

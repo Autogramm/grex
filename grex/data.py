@@ -55,17 +55,19 @@ def build_node_features(node_name, relation_name, features, predicate):
     return ret
 
 
-def extract_features(draft, match, feature_predicate, include_metadata=False):
+def extract_features(draft, match, feature_predicate):
     sentence = draft[match["sent_id"]]
     parents = parents_from_successors(sentence.sucs)
     selected_node_ids = set(match["matching"]["nodes"].values())
     features = dict()
 
     # sentence level meta features
-    if include_metadata:
-        for k, v in sentence.meta.items():
-            if feature_predicate('sentence','meta', k):
-                features[("meta", k)] = v
+    for k, v in sentence.meta.items():
+        try:
+            if feature_predicate("sentence", "meta", k):
+                features[("sentence", "meta", k)] = v
+        except KeyError:
+            break
 
     for node_name, node_id in match["matching"]["nodes"].items():
 
@@ -167,7 +169,7 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
     return features
 
 
-def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="ud", include_metadata=False):
+def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="ud"):
     grewpy.set_config(config)
 
     if conclusion is None:
@@ -192,7 +194,7 @@ def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="u
             assert c in ["Yes", "No"]
 
             data.append({
-                "input": extract_features(draft, match, feature_predicate, include_metadata),
+                "input": extract_features(draft, match, feature_predicate),
                 "sent_id": sent_id,
                 "output": 1 if c == "Yes" else 0
             })
