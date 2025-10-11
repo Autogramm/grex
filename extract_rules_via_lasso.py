@@ -30,14 +30,13 @@ if __name__ == "__main__":
 
     scope = config["scope"]
     conclusion = config.get("conclusion", None)
-    conclusion_meta = config.get("conclusion_meta", None)
 
     templates = FeaturePredicate.from_config(config["templates"])
     feature_predicate = FeaturePredicate.from_config(config["features"], templates=templates)
 
     print("Loading dataset...", flush=True)
     include_metadata = any('meta' in k for k in config.get('features', {}).get('sentence', {}))
-    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, args.config, include_metadata)
+    data = extract_data(args.data, scope, conclusion, feature_predicate, args.config, include_metadata)
 
     # quick checks
     if len(data) == 0:
@@ -82,11 +81,7 @@ if __name__ == "__main__":
 
     extracted_rules = dict()
     extracted_rules['scope'] = scope
-    if conclusion_meta:
-        meta = ",".join(f"{k}={v}" for k, v in conclusion_meta.items())
-        extracted_rules['conclusion'] = f"{conclusion},{meta}" if conclusion else meta
-    else:
-        extracted_rules['conclusion'] = conclusion or ""
+    extracted_rules['conclusion'] = conclusion
     extracted_rules["data_len"] = len(data)
     extracted_rules["n_yes"] = num_positive
     extracted_rules["intercepts"] = list()

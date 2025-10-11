@@ -167,10 +167,10 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
     return features
 
 
-def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_predicate, config="ud", include_metadata=False):
+def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="ud", include_metadata=False):
     grewpy.set_config(config)
 
-    if conclusion is None and conclusion_meta is None:
+    if conclusion is None:
         raise RuntimeError("No conclusion provided in configuration")
 
     if type(treebank_paths) == str:
@@ -187,27 +187,6 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
             matches = [(sent, c, sent["sent_id"]) for c, sents in matches.items() for sent in sents]
         else:
             matches = [(sent, "Yes", sent["sent_id"]) for sent in corpus.search(req)]
-
-        if conclusion_meta is not None:
-            conclusion_meta = {
-                k: v if type(v) is list else [v]
-                for k, v in conclusion_meta.items()
-            }
-
-            matches = [
-                (sent, "No", sent_id)
-                if c == "No"
-                else (
-                    (sent, "Yes", sent_id)
-                    if all(
-                        any(re.fullmatch(p, draft[sent['sent_id']].meta[k]) for p in v)
-                        for k, v in conclusion_meta.items()
-                    )
-                    else (sent, "No", sent_id)
-                )
-                for sent, c, sent_id in matches
-                if all(k in draft[sent['sent_id']].meta for k in conclusion_meta.keys())
-            ]
 
         for match, c, sent_id in matches:
             assert c in ["Yes", "No"]
