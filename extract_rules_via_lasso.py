@@ -82,15 +82,15 @@ if __name__ == "__main__":
     extracted_rules = dict()
     extracted_rules['scope'] = scope
     extracted_rules['conclusion'] = conclusion
-    extracted_rules["data_len"] = len(data)
-    extracted_rules["n_yes"] = num_positive
+    extracted_rules["s_occs"] = len(data)
+    extracted_rules["q_occs"] = num_positive
     extracted_rules["intercepts"] = list()
 
-    classification_data = {
-    "X": X,
-    "y": y,
-    "patterns": list()
-    }
+    # classification_data = {
+    # "X": X,
+    # "y": y,
+    # "patterns": list()
+    # }
 
     # extract rules
     all_rules = set()
@@ -150,12 +150,12 @@ if __name__ == "__main__":
 
                 ordered_rules.append({
                     "pattern": name,
-                    "n_pattern_occurences": int(idx_col.sum()),
-                    "n_pattern_positive_occurences": int(n_pattern_positive_occurence),
-                    "n_pattern_negative_occurrences": int(n_pattern_negative_occurence),
+                    "p_occs": int(idx_col.sum()),
+                    "p_q_occs": int(n_pattern_positive_occurence),
+                    "p_notq_occs": int(n_pattern_negative_occurence),
                     "decision": decision,
-                    "alpha": alpha,
-                    "value": value,
+                    "lambda": alpha,
+                    "coef": value,
                     "coverage": coverage,
                     "coverage_q_in_p": coverage_q,
                     "coverage_not_q_in_p": coverage_not_q,
@@ -167,7 +167,7 @@ if __name__ == "__main__":
                     "cramers_phi": cramers_phi
                 })
 
-                classification_data['patterns'].append({'name': name, 'idx': idx, 'decision': decision})
+                # classification_data['patterns'].append({'name': name, 'idx': idx, 'decision': decision})
 
     extracted_rules["rules"] = ordered_rules
     # if len(extracted_data) == 3:
@@ -175,11 +175,11 @@ if __name__ == "__main__":
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
-    json.dump(extracted_rules, out_stream)
+    json.dump(extracted_rules, out_stream, indent=3)
 
-np.savez(
-        args.output.split(".")[0] + "_data", 
-        X=classification_data['X'],
-        y=classification_data['y'],
-        patterns=classification_data['patterns']
-        )
+# np.savez(
+#         args.output.split(".")[0] + "_data", 
+#         X=classification_data['X'],
+#         y=classification_data['y'],
+#         patterns=classification_data['patterns']
+#         )
