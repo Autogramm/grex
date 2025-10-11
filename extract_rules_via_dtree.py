@@ -51,7 +51,8 @@ if __name__ == "__main__":
     cmd.add_argument("--min-samples_leaf", type=int, default=5)
     cmd.add_argument("--node_impurity", type=float, default=0.15)
     cmd.add_argument("--threshold", type=float, default=1e-1)
-    cmd.add_argument("--tree_depth", type=int, default=12)
+    cmd.add_argument("--max-depth", type=int, default=12)
+    cmd.add_argument("--only-leaves", action="store_true", help="Path only to leaves")
     args = cmd.parse_args()
 
     with open(args.patterns) as instream:
@@ -106,34 +107,41 @@ if __name__ == "__main__":
     extracted_rules = dict()
     extracted_rules['scope'] = scope
     extracted_rules['conclusion'] = conclusion
-    extracted_rules["data_len"] = len(data)
-    extracted_rules["n_yes"] = num_positive
+    extracted_rules["s_occs"] = len(data)
+    extracted_rules["q_occs"] = num_positive
 
-    # TODO
-    classification_data = {
-    "X": X,
-    "y": y,
-    "patterns": list()
-    }
+    # # TODO
+    # classification_data = {
+    # "X": X,
+    # "y": y,
+    # "patterns": list()
+    # }
 
     # extract rules
     rules = []
     clf = tree.DecisionTreeClassifier(criterion="entropy", 
                                     min_samples_leaf=args.min_samples_leaf, 
-                                    max_depth=args.tree_depth)
+                                    max_depth=args.max_depth,
+                                    random_state=42)
     clf.fit(X, y)
     T = clf.tree_
     dtree_parents = parents_from_dtree(T)
 
-    nodes_below_threshold = []
-    for n in range(T.node_count):
-        if T.impurity[n] < args.threshold:
-            if np.argmax(T.value[n]):
-                nodes_below_threshold.append((1, n))
-            else:
-                nodes_below_threshold.append((0, n))
+    selected_nodes = []
+    if args.only_leaves:
+        for n in range(T.node_count):
+            if T.children_left[n] == T.children_right[n] == -1: #is leaf
+                decision = int(np.argmax(T.value[n]))
+                selected_nodes.append((decision, n))
+    else:
+        for n in range(T.node_count):
+            if T.impurity[n] < args.threshold:
+                if np.argmax(T.value[n]):
+                    selected_nodes.append((1, n))
+                else:
+                    selected_nodes.append((0, n))
 
-    for decision, n in nodes_below_threshold:
+    for decision, n in selected_nodes:
         branch = branch_from_parents(n, dtree_parents)
         pattern = pattern_from_dtree(T, branch, feature_names)
         rule = pattern_to_request(pattern, scope) if args.grew else pattern
@@ -171,9 +179,9 @@ if __name__ == "__main__":
             
         rules.append({
             "pattern": str(rule),
-            "n_pattern_occurences": n_matched,
-            "n_pattern_positive_occurences": int(n_pattern_positive_occurence),
-            "n_pattern_negative_occurrences": int(n_pattern_negative_occurence),
+            "p_occs": n_matched,
+            "p_q_occs": int(n_pattern_positive_occurence),
+            "p_notq_occs": int(n_pattern_negative_occurence),
             "decision": "yes" if decision else "no",
             "coverage": coverage,
             "coverage_q_in_p": coverage_p,
@@ -188,11 +196,11 @@ if __name__ == "__main__":
 
     # TODO: idx of each feature and decision for each feature...
     #classification_data['patterns'].append({'name': str(rule), 'vector': TODO, 'decision': decision})
-    extracted_rules['rules'] = rules
+    extracted_rules['rules'] = rules[::-1]
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
-    json.dump(extracted_rules, out_stream)
+    json.dump(extracted_rules, out_stream, indent=3)
 
 # np.savez(
 #         args.output.split(".")[0] + "_data", 
