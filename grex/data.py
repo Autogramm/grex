@@ -81,9 +81,9 @@ def extract_features(draft, match, feature_predicate):
             sentence.features[node_id],
             feature_predicate
         ))
-
-        # node relation
+        # parent node
         parent_id, rel = parents[node_id]
+        # node relation
         if feature_predicate(node_name, "own", "rel_shallow"):
             k = ("node", node_name, "own", "rel_shallow")
             v = ":".join(rel[rel_key] for rel_key in ["1", "2"] if rel_key in rel)
@@ -94,8 +94,9 @@ def extract_features(draft, match, feature_predicate):
             features[k] = v
 
         # position of parent
-        if feature_predicate(node_name, "parent", "position"):
-            features[("node", node_name, "parent", "position")] = "before" if int(parent_id) < int(node_id) else "after"
+        if parent_id != "0":
+            if feature_predicate(node_name, "parent", "position"):
+                features[("node", node_name, "parent", "position")] = "before" if int(parent_id) < int(node_id) else "after"
 
         # parent features
         if parent_id not in selected_node_ids:
@@ -127,7 +128,11 @@ def extract_features(draft, match, feature_predicate):
             ))
 
         # children features
-        for child_id, child_rel in sentence.sucs.get(node_id, list()):
+        children = sentence.sucs.get(node_id, list())
+        if not children:
+            features[("node", node_name, "own", "has_child")] = "No"
+
+        for child_id, child_rel in children:
             # only consider children that are not matched nodes
             if child_id in selected_node_ids:
                 continue
@@ -186,6 +191,8 @@ def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="u
         req = grewpy.Request(scope)
         if conclusion is not None:
             matches = corpus.search(req, clustering_parameter=["{" + conclusion + "}"])
+            if matches == []:
+                raise RuntimeError("There are no matches for the specified scope..")
             matches = [(sent, c, sent["sent_id"]) for c, sents in matches.items() for sent in sents]
         else:
             matches = [(sent, "Yes", sent["sent_id"]) for sent in corpus.search(req)]
