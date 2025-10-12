@@ -45,7 +45,7 @@ If you use Grex for contrastive studies, please cite the most pertinent of the f
     pages = "26--38",
     ISBN = "979-8-89176-293-0"
     }
-
+```
 ## Documentation
 
 The documentation is available [here](https://grex.grew.fr).
