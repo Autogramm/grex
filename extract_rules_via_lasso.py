@@ -30,13 +30,12 @@ if __name__ == "__main__":
 
     scope = config["scope"]
     conclusion = config.get("conclusion", None)
-    conclusion_meta = config.get("conclusion_meta", None)
 
     templates = FeaturePredicate.from_config(config["templates"])
     feature_predicate = FeaturePredicate.from_config(config["features"], templates=templates)
 
     print("Loading dataset...", flush=True)
-    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, config=args.config)
+    data = extract_data(args.data, scope, conclusion, feature_predicate, args.config)
 
     # quick checks
     if len(data) == 0:
@@ -80,9 +79,17 @@ if __name__ == "__main__":
         y[i] = v
 
     extracted_rules = dict()
-    extracted_rules["data_len"] = len(data)
-    extracted_rules["n_yes"] = num_positive
+    extracted_rules['scope'] = scope
+    extracted_rules['conclusion'] = conclusion
+    extracted_rules["s_occs"] = len(data)
+    extracted_rules["q_occs"] = num_positive
     extracted_rules["intercepts"] = list()
+
+    # classification_data = {
+    # "X": X,
+    # "y": y,
+    # "patterns": list()
+    # }
 
     # extract rules
     all_rules = set()
@@ -126,35 +133,52 @@ if __name__ == "__main__":
                 expected = (n_matched * num_positive) / len(data)
                 delta_observed_expected = n_pattern_positive_occurence - expected
 
+                coverage_q = n_pattern_positive_occurence / n_matched
+                coverage_not_q = n_pattern_negative_occurence / n_matched
+
                 if n_pattern_positive_occurence / n_matched > int(y.sum()) / len(data):
                     decision = 'yes'
                     coverage = (n_pattern_positive_occurence / num_positive) * 100
-                    presicion = (n_pattern_positive_occurence / n_matched) * 100
+                    precision = (n_pattern_positive_occurence / n_matched) * 100
+                    ratio = coverage_q / coverage_not_q if coverage_not_q != 0 else 0
                 else:
                     decision = 'no'
                     coverage = (n_pattern_negative_occurence / (len(data) - num_positive)) * 100
-                    presicion = (n_pattern_negative_occurence / n_matched) * 100
+                    precision = (n_pattern_negative_occurence / n_matched) * 100
+                    ratio = coverage_not_q / coverage_q if coverage_q != 0  else 0
 
                 ordered_rules.append({
                     "pattern": name,
-                    "n_pattern_occurence": int(idx_col.sum()),
-                    "n_pattern_positive_occurence": int(n_pattern_positive_occurence),
+                    "p_occs": int(idx_col.sum()),
+                    "p_q_occs": int(n_pattern_positive_occurence),
+                    "p_notq_occs": int(n_pattern_negative_occurence),
                     "decision": decision,
-                    "alpha": alpha,
-                    "value": value,
+                    "lambda": alpha,
+                    "coef": value,
                     "coverage": coverage,
-                    "precision": presicion,
+                    "coverage_q_in_p": coverage_q,
+                    "coverage_not_q_in_p": coverage_not_q,
+                    "precision": precision,
+                    "ratio": ratio,
                     "delta": delta_observed_expected,
                     "g-statistic": gstat,
                     "p-value": p_value,
                     "cramers_phi": cramers_phi
                 })
 
-    extracted_rules["rules"] = ordered_rules
+                # classification_data['patterns'].append({'name': name, 'idx': idx, 'decision': decision})
 
+    extracted_rules["rules"] = ordered_rules
     # if len(extracted_data) == 3:
     #    break
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
-    json.dump(extracted_rules, out_stream)
+    json.dump(extracted_rules, out_stream, indent=3)
+
+# np.savez(
+#         args.output.split(".")[0] + "_data", 
+#         X=classification_data['X'],
+#         y=classification_data['y'],
+#         patterns=classification_data['patterns']
+#         )

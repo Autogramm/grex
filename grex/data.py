@@ -55,17 +55,19 @@ def build_node_features(node_name, relation_name, features, predicate):
     return ret
 
 
-def extract_features(draft, match, feature_predicate, include_metadata=False):
+def extract_features(draft, match, feature_predicate):
     sentence = draft[match["sent_id"]]
     parents = parents_from_successors(sentence.sucs)
     selected_node_ids = set(match["matching"]["nodes"].values())
     features = dict()
 
     # sentence level meta features
-    if include_metadata:
-        for k, v in sentence.meta.items():
-            if k != "sent_id" and not k.startswith("text"):
-                features[("meta", k)] = v
+    for k, v in sentence.meta.items():
+        try:
+            if feature_predicate("sentence", "meta", k):
+                features[("sentence", "meta", k)] = v
+        except KeyError:
+            break
 
     for node_name, node_id in match["matching"]["nodes"].items():
 
@@ -79,9 +81,9 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
             sentence.features[node_id],
             feature_predicate
         ))
-
-        # node relation
+        # parent node
         parent_id, rel = parents[node_id]
+        # node relation
         if feature_predicate(node_name, "own", "rel_shallow"):
             k = ("node", node_name, "own", "rel_shallow")
             v = ":".join(rel[rel_key] for rel_key in ["1", "2"] if rel_key in rel)
@@ -92,8 +94,9 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
             features[k] = v
 
         # position of parent
-        if feature_predicate(node_name, "parent", "position"):
-            features[("node", node_name, "parent", "position")] = "before" if int(parent_id) < int(node_id) else "after"
+        if parent_id != "0":
+            if feature_predicate(node_name, "parent", "position"):
+                features[("node", node_name, "parent", "position")] = "before" if int(parent_id) < int(node_id) else "after"
 
         # parent features
         if parent_id not in selected_node_ids:
@@ -125,7 +128,11 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
             ))
 
         # children features
-        for child_id, child_rel in sentence.sucs.get(node_id, list()):
+        children = sentence.sucs.get(node_id, list())
+        if not children:
+            features[("node", node_name, "own", "has_child")] = "No"
+
+        for child_id, child_rel in children:
             # only consider children that are not matched nodes
             if child_id in selected_node_ids:
                 continue
@@ -167,10 +174,10 @@ def extract_features(draft, match, feature_predicate, include_metadata=False):
     return features
 
 
-def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_predicate, config="ud"):
+def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="ud"):
     grewpy.set_config(config)
 
-    if conclusion is None and conclusion_meta is None:
+    if conclusion is None:
         raise RuntimeError("No conclusion provided in configuration")
 
     if type(treebank_paths) == str:
@@ -184,36 +191,18 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
         req = grewpy.Request(scope)
         if conclusion is not None:
             matches = corpus.search(req, clustering_parameter=["{" + conclusion + "}"])
-            matches = [(sent, c) for c, sents in matches.items() for sent in sents]
+            if matches == []:
+                raise RuntimeError("There are no matches for the specified scope..")
+            matches = [(sent, c, sent["sent_id"]) for c, sents in matches.items() for sent in sents]
         else:
-            matches = [(sent, "Yes") for sent in corpus.search(req)]
+            matches = [(sent, "Yes", sent["sent_id"]) for sent in corpus.search(req)]
 
-        if conclusion_meta is not None:
-            conclusion_meta = {
-                k: v if type(v) is list else [v]
-                for k, v in conclusion_meta.items()
-            }
-
-            matches = [
-                (sent, "No")
-                if c == "No"
-                else (
-                    (sent, "Yes")
-                    if all(
-                        any(re.fullmatch(p, draft[sent['sent_id']].meta[k]) for p in v)
-                        for k, v in conclusion_meta.items()
-                    )
-                    else (sent, "No")
-                )
-                for sent, c in matches
-                if all(k in draft[sent['sent_id']].meta for k in conclusion_meta.keys())
-            ]
-
-        for match, c in matches:
+        for match, c, sent_id in matches:
             assert c in ["Yes", "No"]
 
             data.append({
                 "input": extract_features(draft, match, feature_predicate),
+                "sent_id": sent_id,
                 "output": 1 if c == "Yes" else 0
             })
 
@@ -262,6 +251,7 @@ def extract_data(treebank_paths, scope, conclusion, conclusion_meta, feature_pre
 
         sanitized_data.append({
             "input": sanitized_input,
+            "sent_id": match["sent_id"],
             "output": match["output"]
         })
 

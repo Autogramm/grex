@@ -3,7 +3,9 @@ import collections
 
 from grewpy import Request
 
-ALLOWED_FEATURE_POSITIONS = ["own", "parent", "child", "prev", "next"]
+ALLOWED_FEATURE_POSITIONS = ["own", "parent", "child", "prev", "next", "meta"]
+ALLOWED_KEYS = {"method", "regexp", "lemma_top_k", "lemma_upos_filter"}
+REQUIRED_KEYS = {"method", "regexp"}
 
 class Dict:
     def __init__(self, values):
@@ -116,7 +118,9 @@ class FeaturePredicate:
                 obj.lemma_filters[node] = dict()
                 for k, v in tpl.items():
                     assert k in ALLOWED_FEATURE_POSITIONS
-                    assert all(k2 in ["method", "regexp", "lemma_top_k", "lemma_upos_filter"] for k2 in v.keys())
+                    v_keys = set(v.keys())
+                    assert REQUIRED_KEYS.issubset(v_keys), f"Missing required keys in '{k}'. Must contain {REQUIRED_KEYS}"
+                    assert v_keys.issubset(ALLOWED_KEYS), f"Unexpected keys in '{k}'. Allowed keys are {ALLOWED_KEYS}"
                     obj.matchers[node][k] = StringMatcher(v["method"], v["regexp"])
                     obj.lemma_filters[node][k] = LemmaFilter(v.get("lemma_top_k", -1), v.get("lemma_upos_filter", list()))
 

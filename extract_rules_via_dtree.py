@@ -51,7 +51,8 @@ if __name__ == "__main__":
     cmd.add_argument("--min-samples_leaf", type=int, default=5)
     cmd.add_argument("--node_impurity", type=float, default=0.15)
     cmd.add_argument("--threshold", type=float, default=1e-1)
-    cmd.add_argument("--tree_depth", type=int, default=12)
+    cmd.add_argument("--max-depth", type=int, default=12)
+    cmd.add_argument("--only-leaves", action="store_true", help="Path only to leaves")
     args = cmd.parse_args()
 
     with open(args.patterns) as instream:
@@ -59,13 +60,12 @@ if __name__ == "__main__":
 
     scope = config["scope"]
     conclusion = config.get("conclusion", None)
-    conclusion_meta = config.get("conclusion_meta", None)
 
     templates = FeaturePredicate.from_config(config["templates"])
     feature_predicate = FeaturePredicate.from_config(config["features"], templates=templates)
 
     print("Loading dataset...", flush=True)
-    data = extract_data(args.data, scope, conclusion, conclusion_meta, feature_predicate, config=args.config)
+    data = extract_data(args.data, scope, conclusion, feature_predicate, args.config)
 
     # quick checks
     if len(data) == 0:
@@ -104,28 +104,43 @@ if __name__ == "__main__":
         y[i] = v
 
     extracted_rules = dict()
-    extracted_rules["data_len"] = len(data)
-    extracted_rules["n_yes"] = num_positive
+    extracted_rules['scope'] = scope
+    extracted_rules['conclusion'] = conclusion
+    extracted_rules["s_occs"] = len(data)
+    extracted_rules["q_occs"] = num_positive
+
+    # # TODO
+    # classification_data = {
+    # "X": X,
+    # "y": y,
+    # "patterns": list()
+    # }
 
     # extract rules
-
     rules = []
     clf = tree.DecisionTreeClassifier(criterion="entropy", 
                                     min_samples_leaf=args.min_samples_leaf, 
-                                    max_depth=args.tree_depth)
+                                    max_depth=args.max_depth,
+                                    random_state=42)
     clf.fit(X, y)
     T = clf.tree_
     dtree_parents = parents_from_dtree(T)
 
-    nodes_below_threshold = []
-    for n in range(T.node_count):
-        if T.impurity[n] < args.threshold:
-            if np.argmax(T.value[n]):
-                nodes_below_threshold.append((1, n))
-            else:
-                nodes_below_threshold.append((0, n))
+    selected_nodes = []
+    if args.only_leaves:
+        for n in range(T.node_count):
+            if T.children_left[n] == T.children_right[n] == -1: #is leaf
+                decision = int(np.argmax(T.value[n]))
+                selected_nodes.append((decision, n))
+    else:
+        for n in range(T.node_count):
+            if T.impurity[n] < args.threshold:
+                if np.argmax(T.value[n]):
+                    selected_nodes.append((1, n))
+                else:
+                    selected_nodes.append((0, n))
 
-    for decision, n in nodes_below_threshold:
+    for decision, n in selected_nodes:
         branch = branch_from_parents(n, dtree_parents)
         pattern = pattern_from_dtree(T, branch, feature_names)
         rule = pattern_to_request(pattern, scope) if args.grew else pattern
@@ -133,6 +148,9 @@ if __name__ == "__main__":
         n_matched = int(T.n_node_samples[n])
         n_pattern_positive_occurence = n_matched*T.value[n][0,1]
         n_pattern_negative_occurence = n_matched*T.value[n][0,0]
+
+        node_path = clf.decision_path(X)
+        matched_samples = node_path[:, n].toarray().flatten()
 
         mu = (num_positive / len(data))
         a = (n_pattern_positive_occurence / n_matched)
@@ -146,28 +164,46 @@ if __name__ == "__main__":
         expected = (n_matched * num_positive) / len(data)
         delta_observed_expected = n_pattern_positive_occurence - expected
 
+        coverage_p = n_pattern_positive_occurence / n_matched
+        coverage_not_p = n_pattern_negative_occurence / n_matched
+
         if decision:
             coverage = (n_pattern_positive_occurence / num_positive) * 100
-            presicion = (n_pattern_positive_occurence / n_matched) * 100
+            precision = (n_pattern_positive_occurence / n_matched) * 100
+            ratio = (coverage_p / coverage_not_p) if (coverage_p != 0 and coverage_not_p != 0) else 0
         else:
             coverage = (n_pattern_negative_occurence / (len(data) - num_positive)) * 100
-            presicion = (n_pattern_negative_occurence / n_matched) * 100
-
+            precision = (n_pattern_negative_occurence / n_matched) * 100
+            ratio = (coverage_not_p / coverage_p) if (coverage_p != 0 and coverage_not_p != 0) else 0
+            
         rules.append({
             "pattern": str(rule),
-            "n_pattern_occurence": n_matched,
-            "n_pattern_positive_occurence": n_pattern_positive_occurence,
+            "p_occs": n_matched,
+            "p_q_occs": int(n_pattern_positive_occurence),
+            "p_notq_occs": int(n_pattern_negative_occurence),
             "decision": "yes" if decision else "no",
             "coverage": coverage,
-            "precision": presicion,
+            "coverage_q_in_p": coverage_p,
+            "coverage_not_q_in_p": coverage_not_p,
+            "precision": precision,
+            "ratio_coverage_in_p": ratio,
             "delta": delta_observed_expected,
             "g-statistic": gstat,
             "p-value": p_value,
             "cramers_phi": cramers_phi
         })
-        
-    extracted_rules['rules'] = rules
+
+    # TODO: idx of each feature and decision for each feature...
+    #classification_data['patterns'].append({'name': str(rule), 'vector': TODO, 'decision': decision})
+    extracted_rules['rules'] = rules[::-1]
 
 print("Done.", flush=True)
 with open(args.output, 'w') as out_stream:
-    json.dump(extracted_rules, out_stream)
+    json.dump(extracted_rules, out_stream, indent=3)
+
+# np.savez(
+#         args.output.split(".")[0] + "_data", 
+#         X=classification_data['X'],
+#         y=classification_data['y'], 
+#         patterns=classification_data['patterns']
+#         )
