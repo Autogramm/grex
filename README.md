@@ -9,14 +9,17 @@ Currently, the repository contains the code to use Grex as CLI tool.
 If you use this software, please cite the following work:
 
 ```
-@inproceedings{herrera_et_al2024grex,
+@inproceedings{herrera-etal-2024-sparse,
     title = "Sparse Logistic Regression with High-order Features for Automatic Grammar Rule Extraction from Treebanks",
-    author = "Herrera, Santiago and Corro, Caio and Kahane, Sylvain",
-    booktitle = "Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation",
+    author = "Herrera, Santiago  and Corro, Caio  and Kahane, Sylvain",
+    editor = "Calzolari, Nicoletta  and Kan, Min-Yen  and Hoste, Veronique  and Lenci, Alessandro  and Sakti, Sakriani  andXue, Nianwen",
+    booktitle = "Proceedings of the 2024 Joint International Conference on Computational Linguistics, Language Resources and Evaluation (LREC-COLING 2024)",
     month = may,
     year = "2024",
     address = "Torino, Italia",
-    url = "https://arxiv.org/abs/2403.17534",
+    publisher = "ELRA and ICCL",
+    url = "https://aclanthology.org/2024.lrec-main.1314/",
+    pages = "15114--15125",
 }
 ```
 
