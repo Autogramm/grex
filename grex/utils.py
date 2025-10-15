@@ -185,14 +185,14 @@ def pattern_to_request(pattern, scope):
         # position
         if feat == "position":
             if value == "after":
-                request.append(keyword, f"{parent} << {node_name}")
+                request.append(keyword, f"{parent}->{node_name}; {node_name} << {parent}")
             else:
-                request.append(keyword, f"{node_name} << {parent}")
+                request.append(keyword, f"{parent}->{node_name}; {parent} << {node_name}")
     
         # deprels
         elif "rel_shallow" in feat:
             deprel = value.split(":")
-            rel = f"1={deprel[0]}, 2={deprel[1]}" if len(deprel) == 2 else f"1={value}"
+            rel = f"1={deprel[0]}, 2={deprel[1]}" if len(deprel) == 2 else f"1={value}, !2"
             if target == "own":
                 request.append(keyword, f'{parent}-[{rel}]->{node_name}')
             else: #child
