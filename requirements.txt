@@ -1,4 +1,4 @@
 Cython==3.0.11
-grewpy==0.6.0
+grewpy>=0.7.1
 PyYAML==6.0.1
 skglm==0.3.1

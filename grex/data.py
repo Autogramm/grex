@@ -190,7 +190,7 @@ def extract_data(treebank_paths, scope, conclusion, feature_predicate, config="u
 
         req = grewpy.Request(scope)
         if conclusion is not None:
-            matches = corpus.search(req, clustering_parameter=["{" + conclusion + "}"])
+            matches = corpus.search(req, clustering_keys=["{" + conclusion + "}"])
             if matches == []:
                 raise RuntimeError("There are no matches for the specified scope..")
             matches = [(sent, c, sent["sent_id"]) for c, sents in matches.items() for sent in sents]
