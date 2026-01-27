@@ -23,7 +23,9 @@ data = extract_data(args.data, scope, conclusion, feature_predicate, config=args
 
 available_features = set()
 for sentence in data:
-    available_features.update(sentence["input"].keys())
+    for feat, value in sentence["input"].items():
+        vals = value if isinstance(value, set) else {value}
+        available_features.update(f"{feat}={value}" for value in vals)
 
 for f in sorted(available_features):
     print(f)

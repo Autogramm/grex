@@ -37,9 +37,36 @@ class StringMatcher:
         assert all(type(p) == str for p in regexps)
         self.regexps = regexps
 
-    def __call__(self, string):
-        m = any(re.fullmatch(p, string) for p in self.regexps)
-        return m if self.include else not m
+        self.key_patterns = []
+        self.kv_patterns = []
+
+        for p in regexps:
+            if "=" in p:
+                k_str, v_str = p.split("=", 1)
+                self.kv_patterns.append((re.compile(k_str), re.compile(v_str)))
+            else:
+                self.key_patterns.append(re.compile(p))
+
+    def __call__(self, key, value=None):
+        """
+        Determines if the (key, value) pair matches the configured regexps.
+        """
+        is_match = False
+
+        # If the key matches here, it applies to ALL values, so it's a match.
+        for k_pattern in self.key_patterns:
+            if k_pattern.fullmatch(key):
+                is_match = True
+                break
+        
+        # If no match found yet, check key=value matches (e.g., "upos=ADJ")
+        if not is_match and value is not None:
+            for k_pattern, v_pattern in self.kv_patterns:
+                if k_pattern.fullmatch(key) and v_pattern.fullmatch(value):
+                    is_match = True
+                    break
+
+        return is_match if self.include else not is_match
 
 
 class LemmaFilter:
@@ -126,14 +153,14 @@ class FeaturePredicate:
 
         return obj
 
-    def __call__(self, name, where, feature):
+    def __call__(self, name, where, feature_key, feature_value=None):
         assert where in ALLOWED_FEATURE_POSITIONS
         if name not in self.matchers:
             raise KeyError("Feature matching has not been implemented for node '%s'" % name)
         if where not in self.matchers[name]:
             return False
         else:
-            return self.matchers[name][where](feature)
+            return self.matchers[name][where](feature_key, feature_value)
 
     def reset_lemmas_counter(self):
         for k, v in self.lemma_filters.items():

@@ -46,7 +46,7 @@ def parents_from_successors(sucs):
 def build_node_features(node_name, relation_name, features, predicate):
     ret = dict()
     for k, v in features.items():
-        if predicate(node_name, relation_name, k):
+        if predicate(node_name, relation_name, k, v):
             if k == "lemma":
                 # for lemmas we need to keep the upos information for filtering
                 ret[("node", node_name, relation_name, k)] = (v, features["upos"])
@@ -83,20 +83,22 @@ def extract_features(draft, match, feature_predicate):
         ))
         # parent node
         parent_id, rel = parents[node_id]
+        rel_v = rel.get("deep") or ":".join(rel[k] for k in ("1", "2") if k in rel)
+
         # node relation
-        if feature_predicate(node_name, "own", "rel_shallow"):
+        if feature_predicate(node_name, "own", "rel_shallow", rel_v):
             k = ("node", node_name, "own", "rel_shallow")
-            v = ":".join(rel[rel_key] for rel_key in ["1", "2"] if rel_key in rel)
-            features[k] = v
+            features[("node", node_name, "own", "rel_shallow")] = rel_v
+
         if feature_predicate(node_name, "own", "rel_deep") and "deep" in rel:
             k = ("node", node_name, "own", "rel_deep")
-            v = rel['deep']
-            features[k] = v
+            features[("node", node_name, "own", "rel_deep")] = rel_v
 
         # position of parent
         if parent_id != "0":
-            if feature_predicate(node_name, "parent", "position"):
-                features[("node", node_name, "parent", "position")] = "before" if int(parent_id) < int(node_id) else "after"
+            position_v = "before" if int(parent_id) < int(node_id) else "after"
+            if feature_predicate(node_name, "parent", "position", position_v):
+                features[("node", node_name, "parent", "position")] = position_v
 
         # parent features
         if parent_id not in selected_node_ids:
@@ -129,7 +131,7 @@ def extract_features(draft, match, feature_predicate):
 
         # children features
         children = sentence.sucs.get(node_id, list())
-        if not children:
+        if not children and feature_predicate(node_name, "own", "has_child"):
             features[("node", node_name, "own", "has_child")] = "No"
 
         for child_id, child_rel in children:
@@ -140,7 +142,7 @@ def extract_features(draft, match, feature_predicate):
             # child features
             child_features = sentence.features[child_id]
             for k, v in child_features.items():
-                if feature_predicate(node_name, "child", k):
+                if feature_predicate(node_name, "child", k, v):
                     key = ("node", node_name, "child", k)
                     if k == "lemma":
                         # for lemmas we need to keep the upos information for filtering
@@ -156,21 +158,21 @@ def extract_features(draft, match, feature_predicate):
 
             # relation with child
             _, rel = parents[child_id]
-            if feature_predicate(node_name, "child", "rel_shallow"):
+            child_rel_v = rel.get("deep") or ":".join(rel[k] for k in ("1", "2") if k in rel)
+            if feature_predicate(node_name, "child", "rel_shallow", child_rel_v):
                 k = ("node", node_name, "child", "rel_shallow")
                 v = ":".join(rel[rel_key] for rel_key in ["1", "2"] if rel_key in rel)
                 if k not in features:
                     features[k] = {v}
                 else:
                     features[k].add(v)
-            if feature_predicate(node_name, "child", "rel_deep") and "deep" in rel:
+            if feature_predicate(node_name, "child", "rel_deep", child_rel_v) and "deep" in rel:
                 k = ("node", node_name, "child", "rel_deep")
                 v = rel["deep"]
                 if k not in features:
                     features[k] = {v}
                 else:
                     features[k].add(v)
-
     return features
 
 

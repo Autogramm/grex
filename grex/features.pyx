@@ -52,7 +52,7 @@ class ClassFeature:
                 X[i, offset + value_id] = 1
 
     def get_all_names(self):
-        return ["%s=%s" % (self.name, v) for v in self.dict._id_to_str]
+        return [("%s=%s" % (self.name, v),) for v in self.dict._id_to_str]
 
     def __len__(self):
         if not self.initialized:
@@ -86,7 +86,7 @@ class IndicatorFeature:
                     X[i, offset + value_id] = 1
 
     def get_all_names(self):
-        return ["%s=%s" % (self.name, v) for v in self.dict._id_to_str]
+        return [("%s=%s" % (self.name, v),) for v in self.dict._id_to_str]
 
     def __len__(self):
         if not self.initialized:
@@ -258,7 +258,7 @@ class AllProductFeatures:
                             X[i, offset + j] = self.weight
 
     def get_all_names(self):
-        return [",".join("%s=%s" % (k, v) for k, v in feature) for feature in self.valid_features]
+        return [tuple(f"{k}={v}" for k, v in feature) for feature in self.valid_features]
 
     def __len__(self):
         if not self.initialized:
