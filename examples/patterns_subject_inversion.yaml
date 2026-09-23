@@ -1,4 +1,4 @@
-scope: pattern { X-[1=subj]->Y }
+scope: pattern { X-[1=nsubj]->Y }
 conclusion: X << Y
 
 templates:

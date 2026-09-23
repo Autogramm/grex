@@ -2,9 +2,115 @@
 
 This is the maintained repository of Grex, a tool for the automatic extraction of grammatical rules from treebanks using machine learning.
 
-It was conceived by Santiago Herrera, Caio Corro, Bruno Guillaume and Sylvain Kahane. A full description of the method can be found in the paper (the code is deprecated): https://arxiv.org/abs/2403.17534
+This is the branch has the **WIP library version of Grex**.
 
-Currently, the repository contains the code to use Grex as CLI tool. 
+- Restructured as an installable library.
+- Code moved from flat scripts to a proper src/grex package (pip install -e . via pyproject.toml, replacing requirements.txt).
+- Rule-extraction methods (DTreeExtractor, LassoExtractor) now share a common Extractor interface and are importable directly (from grex import DTreeExtractor, LassoExtractor).
+- The three CLI scripts (extract_rules_via_dtree.py, extract_rules_via_lasso.py, check_features.py) still work the same way, just moved under src/grex/cli/. 
+- This is just an reorganization. No change to algorithms, output format, or statistics.
+
+## Installation
+
+Clone the project repository
+```bash
+git clone https://github.com/Autogramm/grex
+cd grex
+```
+
+Create a virtual environment
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install python packages
+```bash
+pip install -e .
+```
+
+Or, for the dev version for ruff/pytest
+
+```bash
+pip install -e .[dev]
+```
+
+Grex use [Grew](https://grew.fr/), a rewriting graph library, which allows writing very flexible queries over graphs. Grew is implemented in Ocaml.
+
+- Install grewpy: https://grew.fr/usage/python/
+
+
+## Usage
+
+### 1. As a library
+
+Grex can be used as a Python library instead of through the CLI:
+
+```python
+from grex.data.data import ExtractionConfig, CorpusData
+from grex import LassoExtractor
+
+config = ExtractionConfig.from_yaml("patterns.yaml")
+corpus = CorpusData.from_corpus(["corpus.conllu"], config, grew_config="sud")
+matrix = corpus.to_matrix(max_degree=2, min_feature_occurence=5)
+
+extractor = LassoExtractor(config.scope, config.conclusion, alpha_num=100)
+extractor.fit(matrix.X, matrix.binarize(config.positive), matrix.feature_names)
+
+for rule in extractor.rules():
+    print(rule)
+```
+
+### 2. CLI usage
+
+Grex has also three CLI entry points under `src/grex/cli/`. Each takes one or more `.conllu` treebank files and a pattern config YAML (see `examples/` for sample configs).
+
+Check which features are available for a pattern config before running a full extraction:
+
+```bash
+python3 src/grex/cli/check_features.py <corpus.conllu> \
+    --patterns <patterns.yaml> \
+    --config ud|sud
+```
+
+Extract rules using sparse logistic regression (lasso):
+
+```bash
+python3 src/grex/cli/extract_rules_via_lasso.py <corpus.conllu> \
+    --patterns <patterns.yaml> \
+    --output <results.json> \
+    --config sud \
+    --max-degree 2 \
+    --alpha-num 100
+```
+
+Extract rules using a decision tree:
+
+```bash
+python3 src/grex/cli/extract_rules_via_dtree.py <corpus.conllu> \
+    --patterns <patterns.yaml> \
+    --output <results.json> \
+    --config sud \
+    [--only-leaves] [--grew]
+```
+
+Run the examples:
+
+```bash
+cd examples && sh run.sh
+```
+
+### 3. Lib layout
+
+- `src/grex/data/` — reading and annotating treebanks, building feature matrices.
+- `src/grex/extract/` — rule/pattern extraction methods (`dtree`, `lasso`, ...), all implementing the shared `Extractor` interface in `extract/base.py`. Adding a new method means adding a new file here.
+- `src/grex/viz/` — visualization functions.
+- `src/grex/utils/` — shared utilities.
+- `src/grex/cli/` — thin command-line wrappers around the library.
+
+## References
+
+It was conceived by Santiago Herrera, Caio Corro, Bruno Guillaume and Sylvain Kahane. A full description of the method can be found in the paper (the code is deprecated): https://arxiv.org/abs/2403.17534.
 
 If you use this software, please cite the following work:
 
@@ -32,6 +138,7 @@ If you use Grex for contrastive studies, please cite the most pertinent of the f
   booktitle = {Langues \& Langages à la croisée des Disciplines (LLcD)},
   year = {2024},
   address = {Paris}
+}
 ```
 
 ```
@@ -51,31 +158,9 @@ If you use Grex for contrastive studies, please cite the most pertinent of the f
 ```
 ## Documentation
 
-The documentation is available [here](https://grex.grew.fr).
+The old documentation is available [here](https://grex.grew.fr).
+
 Alternatively, it can be run locally by following the instructions provided in this [repository](https://github.com/Autogramm/grex-doc).
-
-## Installation
-
-Clone the project repository
-```bash
-git clone https://github.com/Autogramm/grex
-cd grex
-```
-
-Create a virtual environment
-```bash
-python3 -m venv .venv
-source .venv/bin/active
-```
-
-Install python packages
-```pip
-pip install -r requirements.txt
-```
-
-Grex use [Grew](https://grew.fr/), a rewriting graph library, which allows writing very flexible queries over graphs. Grew is implemented in Ocaml.
-
-- Install grewpy: https://grew.fr/usage/python/
 
 ### Troubleshooting
 

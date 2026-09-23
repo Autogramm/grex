@@ -1,0 +1,40 @@
+[build-system]
+requires = ["hatchling", "hatch-cython", "Cython==3.0.11", "setuptools", "numpy"]
+build-backend = "hatchling.build"
+
+[project]
+name = "grex"
+version = "0.1.0"
+requires-python = ">=3.10"
+dependencies = [
+    "Cython==3.0.11",
+    "grewpy>=0.7.1",
+    "PyYAML==6.0.1",
+    "skglm==0.3.1",
+    "scikit-learn==1.7.2",
+    "scipy==1.16.2",
+    "numpy==2.3.3"
+    ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/grex"]
+
+[tool.hatch.build.targets.wheel.hooks.cython]
+dependencies = ["hatch-cython"]
+
+[tool.hatch.build.targets.wheel.hooks.cython.options]
+compile_py = false
+include_numpy = true
+
+[tool.hatch.build.targets.wheel.hooks.cython.options.files]
+targets = ["*/features.pyx"]
+
+[project.optional-dependencies]
+dev = ["ruff", "pytest"]
+
+[tool.ruff]
+line-length = 100        # your call; 88 is Black's default, 100 is common
+target-version = "py310" # matches your requires-python = ">=3.10"
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]  # pycodestyle errors, pyflakes, import sorting

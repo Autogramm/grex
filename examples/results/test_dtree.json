@@ -1,0 +1,44 @@
+{
+   "scope": "pattern { X-[1=subj]->Y }",
+   "conclusion": "X << Y",
+   "s_occs": 17,
+   "q_occs": 2,
+   "rules": [
+      {
+         "pattern": [
+            "1:node:X:own:rel_shallow=root"
+         ],
+         "p_occs": 9,
+         "p_q_occs": 2,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.2222222222222222,
+         "coverage_not_q_in_p": 0.7777777777777778,
+         "precision": 77.77777777777779,
+         "ratio_coverage_in_p": 3.5000000000000004,
+         "delta": 0.9411764705882353,
+         "g-statistic": 0.7778370723033857,
+         "p-value": 0.37780345726720577,
+         "cramers_phi": 0.29398357329456837
+      },
+      {
+         "pattern": [
+            "0:node:X:own:rel_shallow=root"
+         ],
+         "p_occs": 8,
+         "p_q_occs": 0,
+         "p_notq_occs": 8,
+         "decision": "no",
+         "coverage": 53.333333333333336,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio_coverage_in_p": 0,
+         "delta": -0.9411764705882353,
+         "g-statistic": 2.0026102872640967,
+         "p-value": 0.1570285845457977,
+         "cramers_phi": 0.5003261795149361
+      }
+   ]
+}

@@ -1,0 +1,34 @@
+scope: pattern { X-[1=subj]->Y }
+conclusion: "X << Y"
+
+templates:
+    base:
+        own:
+            method: exclude
+            regexp: ["form", "textform", "wordform", "lemma", "SpaceAfter", "Typo", "Correct.*", "position", "xpos"]
+            lemma_top_k: 0
+        parent:
+            method: exclude
+            regexp: ["form", "textform", "wordform", "lemma", "SpaceAfter", "Typo", "Correct.*", "xpos"]
+            lemma_top_k: 0
+        child:
+            method: exclude
+            regexp: ["form", "textform", "wordform", "lemma", "SpaceAfter", "Typo", "Correct.*", "xpos"]
+            lemma_top_k: 0
+
+features:
+    X: base
+    Y: 
+        own:
+            method: exclude
+            regexp: ["form", "textform", "wordform", "lemma", "SpaceAfter", "Typo", "Correct.*", "rel.*", "xpos"]
+            lemma_top_k: 0
+        child:
+            method: exclude
+            regexp: ["form", "textform", "wordform", "lemma", "SpaceAfter", "Typo", "Correct.*", "xpos"]
+            lemma_top_k: 0
+#    sentence:
+#        meta:
+#            method: include
+#            regexp: ['speaker']
+#            lemma_top_k: 0

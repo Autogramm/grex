@@ -3,7 +3,7 @@ import collections
 import numpy as np
 import scipy.sparse
 
-from grex.utils import Dict
+from grex.utils.utils import Dict
 
 
 # Should not be used,
@@ -44,12 +44,13 @@ class ClassFeature:
         self.dict = Dict(values)
         self.initialized = True
 
-    def build_features(self, X, data, offset):
+    def build_features(self, rows, cols, vals, data, offset):
         for i, dep in enumerate(data):
             if self.name in dep:
-                value = dep[self.name]
-                value_id = self.dict.str_to_id(value)
-                X[i, offset + value_id] = 1
+                j = self.dict.str_to_id(dep[self.name])
+                rows.append(i)
+                cols.append(offset + j)
+                vals.append(1)
 
     def get_all_names(self):
         return [("%s=%s" % (self.name, v),) for v in self.dict._id_to_str]
@@ -78,12 +79,12 @@ class IndicatorFeature:
         self.dict = Dict(values)
         self.initialized = True
 
-    def build_features(self, X, data, offset):
+    def build_features(self, rows, cols, vals, data, offset):
         for i, dep in enumerate(data):
             if self.name in dep:
                 for value in dep[self.name]:
-                    value_id = self.dict.str_to_id(value)
-                    X[i, offset + value_id] = 1
+                    j = self.dict.str_to_id(value)
+                    rows.append(i); cols.append(offset + j); vals.append(1)
 
     def get_all_names(self):
         return [("%s=%s" % (self.name, v),) for v in self.dict._id_to_str]
@@ -97,8 +98,9 @@ class IndicatorFeature:
 
 
 class AllSingletonFeatures:
-    def __init__(self, predicate=None):
+    def __init__(self, predicate=None, min_occurences=1):
         self.predicate = predicate
+        self.min_occurences = min_occurences
         self.initialized = False
 
     def init_from_data(self, data):
@@ -120,23 +122,23 @@ class AllSingletonFeatures:
 
         self.features = list()
         self.len_ = 0
-        for name in class_feature_names:
+        for name in sorted(class_feature_names):
             feature = ClassFeature(name)
             feature.init_from_data(data)
             self.len_ += len(feature)
             self.features.append(feature)
 
-        for name in indicator_feature_names:
+        for name in sorted(indicator_feature_names):
             feature = IndicatorFeature(name)
             feature.init_from_data(data)
             self.len_ += len(feature)
             self.features.append(feature)
         self.initialized = True
 
-    def build_features(self, X, data, offset):
+    def build_features(self, rows, cols, vals, data, offset):
         offset2 = 0
         for feature in self.features:
-            feature.build_features(X, data, offset + offset2)
+            feature.build_features(rows, cols, vals, data, offset + offset2)
             offset2 += len(feature)
 
     def get_all_names(self):
@@ -165,48 +167,38 @@ class AllProductFeatures:
             for k, v in dep.items():
                 if self.predicate is not None and not self.predicate(k):
                     continue
-                if type(v) == str:
+                if isinstance(v, str):
                     class_feature_names.add(k)
-                elif type(v) == set:
+                elif isinstance(v, set):
                     indicator_feature_names.add(k)
                 else:
                     raise RuntimeError("Unusable data type for feature %s: %s" % (k, type(v)))
 
-        if len(class_feature_names.intersection(indicator_feature_names)) != 0:
+        if class_feature_names & indicator_feature_names:
             raise RuntimeError("Error in feature types")
 
-        merged_features = {(False, k) for k in class_feature_names}.union((True, k) for k in indicator_feature_names)
+        # tpl = (bool, feat)
+        merged_features = sorted(
+            [(False, k) for k in class_feature_names]
+            + [(True, k) for k in indicator_feature_names],
+            key=lambda tpl: tpl[1],
+        )
 
-        feature_count = collections.defaultdict(lambda: 0)
+        feature_count = collections.defaultdict(int)
         for dep in data:
-            for names in itertools.combinations(merged_features, self.degree):
-                all_keys = []
+            existing_features = [(is_set, name) for (is_set, name) in merged_features if name in dep]
+            for names in itertools.combinations(existing_features, self.degree):
+                all_keys = [[]]
                 for is_set_feature, name in names:
-                    if name not in dep:
-                        break  # cannot build feature for this dep
                     if is_set_feature:
-                        if len(all_keys) == 0:
-                            all_keys = [[(name, v)] for v in dep[name]]
-                        else:
-                            all_keys = [
-                                k + [(name, v)]
-                                for k in all_keys
-                                for v in dep[name]
-                            ]
+                        all_keys = [k + [(name, v)] for k in all_keys for v in dep[name]]
                     else:
-                        if len(all_keys) == 0:
-                            all_keys = [[(name, dep[name])]]
-                        else:
-                            all_keys = [k + [(name, dep[name])] for k in all_keys]
-                else:
-                    # exit without break
-                    for key in all_keys:
-                        key = tuple(key)
-                        feature_count[key] += 1
+                        all_keys = [k + [(name, dep[name])] for k in all_keys]
+                for key in all_keys:
+                    feature_count[tuple(key)] += 1
 
-        # filter on number of occurences
         if self.min_occurences > 1:
-            filtered_features = list(k for k, v in feature_count.items() if v >= self.min_occurences)
+            filtered_features = [k for k, v in feature_count.items() if v >= self.min_occurences]
         else:
             filtered_features = list(feature_count.keys())
 
@@ -217,45 +209,37 @@ class AllProductFeatures:
             vs = tuple(v for _, v in feature)
             if ks not in self.templates:
                 self.templates[ks] = {vs: self.n_features}
-            elif vs not in self.templates[ks]:  # is this test really necessary?!
+            elif vs not in self.templates[ks]:
                 self.templates[ks][vs] = self.n_features
             else:
-                print(feature)
-                print(ks)
-                print(self.templates[ks])
                 raise RuntimeError("SHOULD NOT HAPPEN")
             self.n_features += 1
 
         self.initialized = True
         self.valid_features = filtered_features
 
-    def build_features(self, X, data, int offset):
-        cdef int i, j
-
+    def build_features(self, rows, cols, vals, data, offset):
         for i, dep in enumerate(data):
             for ks, ks_vs in self.templates.items():
-                instance_values = list()
+                instance_values = []
                 valid = True
                 for k in ks:
                     if k not in dep:
                         valid = False
                         break
-                    elif type(dep[k]) == str:
-                        if len(instance_values) == 0:
-                            instance_values = [[dep[k]]]
-                        else:
-                            instance_values = [vs + [dep[k]] for vs in instance_values]
+                    elif isinstance(dep[k], str):
+                        instance_values = ([[dep[k]]] if not instance_values
+                                        else [vs + [dep[k]] for vs in instance_values])
                     else:
-                        if len(instance_values) == 0:
-                            instance_values = [[v] for v in dep[k]]
-                        else:
-                            instance_values = [vs + [v] for vs in instance_values for v in dep[k]]
-
+                        instance_values = ([[v] for v in dep[k]] if not instance_values
+                                        else [vs + [v] for vs in instance_values for v in dep[k]])
                 if valid:
                     for vs in instance_values:
                         j = ks_vs.get(tuple(vs), -1)
                         if j >= 0:
-                            X[i, offset + j] = self.weight
+                            rows.append(i)
+                            cols.append(offset + j)
+                            vals.append(self.weight)
 
     def get_all_names(self):
         return [tuple(f"{k}={v}" for k, v in feature) for feature in self.valid_features]
@@ -281,20 +265,15 @@ class FeatureSet:
 
     def build_features(self, data, sparse=True):
         n_columns = sum(len(f) for f in self.features)
-        if sparse:
-            # TODO: check in celer what kind of sparse matrix it can use
-            X = scipy.sparse.lil_matrix((len(data), n_columns))
-        else:
-            X = np.zeros((len(data), n_columns))
-
+        rows, cols, vals = [], [], []
         offset = 0
         for feature in self.features:
-            feature.build_features(X, data, offset)
+            feature.build_features(rows, cols, vals, data, offset)
             offset += len(feature)
-
-        if sparse:
-            X = scipy.sparse.csc_matrix(X)
-        return X
+        X = scipy.sparse.coo_matrix(
+            (vals, (rows, cols)), shape=(len(data), n_columns)
+        )
+        return X.tocsc() if sparse else X.toarray()
 
     def feature_weights(self, weights, ignore_zeros=True):
         ret = dict()

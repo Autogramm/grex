@@ -1,0 +1,781 @@
+{
+   "scope": "pattern { X-[1=subj]->Y }",
+   "conclusion": "X << Y",
+   "s_occs": 17,
+   "q_occs": 2,
+   "intercepts": [
+      [
+         0.1,
+         -2.0149015637386674
+      ],
+      [
+         0.07525000000000001,
+         -2.0347662754796865
+      ],
+      [
+         0.0505,
+         -2.741851471663426
+      ],
+      [
+         0.025749999999999995,
+         -3.391039572064726
+      ],
+      [
+         0.001,
+         -6.4853807408975195
+      ]
+   ],
+   "rules": [
+      {
+         "pattern": [
+            "node:X:own:Tense=Pres",
+            "node:X:own:rel_shallow=root"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 2,
+         "p_notq_occs": 4,
+         "decision": "yes",
+         "lambda": 0.07525000000000001,
+         "coef": 0.028136688033661955,
+         "coverage": 100.0,
+         "coverage_q_in_p": 0.3333333333333333,
+         "coverage_not_q_in_p": 0.6666666666666666,
+         "precision": 33.33333333333333,
+         "ratio": 0.5,
+         "delta": 1.2941176470588234,
+         "g-statistic": 1.9233997780793775,
+         "p-value": 0.16548235487360718,
+         "cramers_phi": 0.5661860380474745
+      },
+      {
+         "pattern": [
+            "node:X:own:rel_shallow=root",
+            "node:Y:own:Number=Sing"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 2,
+         "p_notq_occs": 4,
+         "decision": "yes",
+         "lambda": 0.07525000000000001,
+         "coef": 0.028040895872494503,
+         "coverage": 100.0,
+         "coverage_q_in_p": 0.3333333333333333,
+         "coverage_not_q_in_p": 0.6666666666666666,
+         "precision": 33.33333333333333,
+         "ratio": 0.5,
+         "delta": 1.2941176470588234,
+         "g-statistic": 1.9233997780793775,
+         "p-value": 0.16548235487360718,
+         "cramers_phi": 0.5661860380474745
+      },
+      {
+         "pattern": [
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.0505,
+         "coef": -0.0065418756397823685,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:Number=Sing",
+            "node:X:own:Tense=Pres"
+         ],
+         "p_occs": 8,
+         "p_q_occs": 2,
+         "p_notq_occs": 6,
+         "decision": "yes",
+         "lambda": 0.0505,
+         "coef": 0.020624330981171668,
+         "coverage": 100.0,
+         "coverage_q_in_p": 0.25,
+         "coverage_not_q_in_p": 0.75,
+         "precision": 25.0,
+         "ratio": 0.3333333333333333,
+         "delta": 1.0588235294117647,
+         "g-statistic": 1.0648600555322225,
+         "p-value": 0.30210933049820454,
+         "cramers_phi": 0.3648390151032751
+      },
+      {
+         "pattern": [
+            "node:X:own:Mood=Ind",
+            "node:Y:child:rel_shallow=det"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.0505,
+         "coef": -4.440892098500626e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:Person=3",
+            "node:Y:child:rel_shallow=det"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.0505,
+         "coef": -0.036408777189167685,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:VerbForm=Fin",
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.0505,
+         "coef": -4.440892098500626e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:Definite=Def",
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.0505,
+         "coef": -0.016376573409461415,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.025749999999999995,
+         "coef": -0.17445852906999404,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:upos=DET"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.025749999999999995,
+         "coef": -2.220446049250313e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:Tense=Pres",
+            "node:Y:own:Number=Sing"
+         ],
+         "p_occs": 10,
+         "p_q_occs": 2,
+         "p_notq_occs": 8,
+         "decision": "yes",
+         "lambda": 0.025749999999999995,
+         "coef": 0.14988758278376524,
+         "coverage": 100.0,
+         "coverage_q_in_p": 0.2,
+         "coverage_not_q_in_p": 0.8,
+         "precision": 20.0,
+         "ratio": 0.25,
+         "delta": 0.8235294117647058,
+         "g-statistic": 0.5548264704854231,
+         "p-value": 0.4563522794510555,
+         "cramers_phi": 0.2355475473201585
+      },
+      {
+         "pattern": [
+            "node:X:own:Person=3",
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.025749999999999995,
+         "coef": -0.8886385744688263,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:Person=3",
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.025749999999999995,
+         "coef": -0.5765679582663932,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:Definite=Def",
+            "node:Y:own:upos=NOUN"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.025749999999999995,
+         "coef": -0.04880800610765301,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:own:upos=NOUN"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -1.0996388368200989,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:rel_shallow=det"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -2.220446049250313e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:rel_shallow=punct",
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -1.5384103135917555,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:rel_shallow=punct",
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -7.771561172376096e-16,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:rel_shallow=punct",
+            "node:Y:own:upos=NOUN"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -1.1071627512897608,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:upos=PUNCT",
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.00782304549918944,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:upos=PUNCT",
+            "node:Y:child:upos=DET"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.005184019043401378,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:child:upos=PUNCT",
+            "node:Y:own:upos=NOUN"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.005199758834533608,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:Number=Sing",
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.556453464766149,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:Person=3",
+            "node:Y:child:upos=DET"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -7.771561172376096e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:Person=3",
+            "node:Y:own:upos=NOUN"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -3.3306690738754696e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:VerbForm=Fin",
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -5.551115123125783e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:VerbForm=Fin",
+            "node:Y:child:rel_shallow=det"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -6.661338147750939e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:VerbForm=Fin",
+            "node:Y:child:upos=DET"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -4.440892098500626e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:VerbForm=Fin",
+            "node:Y:own:upos=NOUN"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -3.3306690738754696e-16,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:rel_shallow=root",
+            "node:Y:child:Definite=Def"
+         ],
+         "p_occs": 5,
+         "p_q_occs": 0,
+         "p_notq_occs": 5,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -1.3596405296975083,
+         "coverage": 33.33333333333333,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.5882352941176471,
+         "g-statistic": 1.2516314295400606,
+         "p-value": 0.2632411117069734,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:X:own:rel_shallow=root",
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 5,
+         "p_q_occs": 0,
+         "p_notq_occs": 5,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.005433285675864208,
+         "coverage": 33.33333333333333,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.5882352941176471,
+         "g-statistic": 1.2516314295400606,
+         "p-value": 0.2632411117069734,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:Definite=Def",
+            "node:Y:child:Number=Sing"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.5831228464439782,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:Definite=Def",
+            "node:Y:own:Number=Sing"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.03022838967954844,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:Number=Sing",
+            "node:Y:child:PronType=Art"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.021079329709668748,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:Number=Sing",
+            "node:Y:child:rel_shallow=det"
+         ],
+         "p_occs": 6,
+         "p_q_occs": 0,
+         "p_notq_occs": 6,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.00842694712884462,
+         "coverage": 40.0,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.7058823529411765,
+         "g-statistic": 1.5019577154480726,
+         "p-value": 0.2203703809813925,
+         "cramers_phi": 0.5003261795149361
+      },
+      {
+         "pattern": [
+            "node:Y:child:PronType=Art",
+            "node:Y:child:upos=DET"
+         ],
+         "p_occs": 7,
+         "p_q_occs": 0,
+         "p_notq_occs": 7,
+         "decision": "no",
+         "lambda": 0.001,
+         "coef": -0.0036234794425911154,
+         "coverage": 46.666666666666664,
+         "coverage_q_in_p": 0.0,
+         "coverage_not_q_in_p": 1.0,
+         "precision": 100.0,
+         "ratio": 0,
+         "delta": -0.8235294117647058,
+         "g-statistic": 1.7522840013560845,
+         "p-value": 0.18558985904516412,
+         "cramers_phi": 0.5003261795149361
+      }
+   ]
+}
