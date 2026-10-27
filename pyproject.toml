@@ -9,7 +9,7 @@ requires-python = ">=3.10"
 dependencies = [
     "Cython==3.0.11",
     "grewpy>=0.7.1",
-    "PyYAML==6.0.1",
+    "PyYAML>=6.0.1",
     "skglm==0.3.1",
     "scikit-learn==1.7.2",
     "scipy==1.16.2",
